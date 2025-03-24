@@ -4,6 +4,7 @@ using Collections.Generic;
 using Globalization;
 using Linq;
 using NUnit.Framework;
+using System.Security.Cryptography.X509Certificates;
 using XFS = MockUnixSupport;
 
 public class MockFileCopyTests
@@ -416,5 +417,49 @@ public class MockFileCopyTests
         Action action = () => fileSystem.File.Copy(sourceFileName, XFS.Path(@"c:\something\demo.txt"));
 
         await That(action).Throws<IOException>();
+    }
+
+
+    // Experimental test to test out issue#1138
+
+    private void MoveDir(IFileSystem fileSystem)
+    {
+        string tempDir = fileSystem.Path.GetTempPath();
+        string src = fileSystem.Path.Combine(tempDir, "src");
+        string dest = fileSystem.Path.Combine(tempDir, "SRC");  // different case
+
+        try
+        {
+            // create source directory
+            IDirectoryInfo srcDir = fileSystem.DirectoryInfo.New(src);
+            srcDir.Create();
+
+            // move directory
+            fileSystem.Directory.Move(src, dest);
+
+            Console.WriteLine($"Successfully moved \"{src}\" to \"{dest}\"");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+
+            if (fileSystem.Directory.Exists(src))
+                fileSystem.Directory.Delete(src);
+
+            if (fileSystem.Directory.Exists(dest))
+                fileSystem.Directory.Delete(dest);
+        }
+    }
+
+    [Test]
+    public void TestMoveDir()
+    {
+        var mockfileSystem = new MockFileSystem();
+        var actualfielSystem = new FileSystem();
+        Console.WriteLine("Actual fileSystem");
+        MoveDir(actualfielSystem);
+
+        Console.WriteLine("Mock FileSystem");
+        MoveDir(mockfileSystem);
     }
 }

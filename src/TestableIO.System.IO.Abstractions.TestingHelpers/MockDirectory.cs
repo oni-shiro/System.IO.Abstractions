@@ -503,10 +503,10 @@ public class MockDirectory : DirectoryBase
         var fullSourcePath = mockFileDataAccessor.Path.GetFullPath(sourceDirName).TrimSlashes();
         var fullDestPath = mockFileDataAccessor.Path.GetFullPath(destDirName).TrimSlashes();
 
-        if (mockFileDataAccessor.StringOperations.Equals(fullSourcePath, fullDestPath))
-        {
-            throw new IOException("Source and destination path must be different.");
-        }
+        //if (mockFileDataAccessor.StringOperations.Equals(fullSourcePath, fullDestPath))
+        //{
+        //    throw new IOException("Source and destination path must be different.");
+        //}
 
         //if we're moving a file, not a directory, call the appropriate file moving function.
         var fileData = mockFileDataAccessor.GetFile(fullSourcePath);
